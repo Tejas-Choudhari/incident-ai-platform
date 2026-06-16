@@ -1,19 +1,5 @@
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/incident_ai
-    username: root
-    password: root
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  kafka:
-    bootstrap-servers: localhost:9092
-
-  ai:
-    ollama:
-      base-url: http://localhost:11434
-      chat:
-        model: phi3:mini
+  application:
+    name: incident-ai-platform
+  profiles:
+    active: LOCAL
