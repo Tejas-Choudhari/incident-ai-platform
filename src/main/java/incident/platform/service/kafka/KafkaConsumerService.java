@@ -2,6 +2,7 @@ package incident.platform.service.kafka;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import incident.platform.service.ai.AIAnalysisService;
 import incident.platform.service.dao.LogRequestVO;
 import incident.platform.service.entity.IncidentLogEntity;
 import incident.platform.service.repository.IncidentLogRepository;
@@ -18,6 +19,7 @@ public class KafkaConsumerService {
 
     private final IncidentLogRepository repository;
     private final ObjectMapper objectMapper;
+    private final AIAnalysisService aiAnalysisService;
 
     @KafkaListener(
             topics = PlatformConstants.INCIDENT_TOPIC,
@@ -43,7 +45,11 @@ public class KafkaConsumerService {
                         )
                         .build();
 
-        repository.save(incidentLog);
+        IncidentLogEntity savedIncident =
+                repository.save(incidentLog);
+
+        aiAnalysisService
+                .analyzeIncident(savedIncident);
         log.info(
                 "Incident Log Saved Successfully"
         );

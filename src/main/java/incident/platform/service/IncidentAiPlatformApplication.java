@@ -8,10 +8,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 @SpringBootApplication
 @ComponentScan("incident.platform.service")
 @EnableKafka
-public class Application {
+public class IncidentAiPlatformApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(IncidentAiPlatformApplication.class, args);
 	}
 
 }

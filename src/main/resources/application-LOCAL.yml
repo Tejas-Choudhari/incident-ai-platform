@@ -27,5 +27,11 @@ spring:
             trusted:
               packages: "*"
 
+openrouter:
+  api:
+    url: https://openrouter.ai/api/v1/chat/completions
+    key: ${OPENROUTER_API_KEY}
+    model: openai/gpt-oss-120b:free
+
 server:
   port: 8181
