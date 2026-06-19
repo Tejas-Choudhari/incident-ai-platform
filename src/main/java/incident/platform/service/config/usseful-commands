@@ -1,0 +1,10 @@
+
+ Start kafka server -  .\bin\windows> .\kafka-server-start.bat ..\..\config\server.properties
+
+ Start zookeeper - .\bin\windows> .\zookeeper-server-start.bat ..\..\config\zookeeper.properties
+
+ Create topic - .\bin\windows\kafka-topics.bat --create --topic my-test-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+ Topic list - .\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+
+ To see the msg in kafka topic :.\bin\windows\ kafka-console-consumer.bat --topic incident-logs --from-beginning --bootstrap-server localhost:9092

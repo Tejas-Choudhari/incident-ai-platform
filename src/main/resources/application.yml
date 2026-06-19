@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: incident-ai-platform
+  profiles:
+    active: LOCAL
