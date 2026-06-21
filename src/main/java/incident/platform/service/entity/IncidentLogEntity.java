@@ -59,11 +59,4 @@ public class IncidentLogEntity {
     @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
-    @PrePersist
-    public void prePersist() {
-
-        if (eventTimestamp == null) {
-            eventTimestamp = LocalDateTime.now();
-        }
-    }
 }

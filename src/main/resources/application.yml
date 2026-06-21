@@ -1,5 +1,29 @@
 spring:
-  application:
-    name: incident-ai-platform
   profiles:
     active: LOCAL
+  application:
+    name: incident-ai-platform
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+
+springdoc:
+  api-docs:
+    - path: /incident-ai-platform/api-docs
+  show-actuator: false
+  override-with-generic-response: false
+  swagger-ui:
+    path: /incident-ai-platform/api-docs/swagger-ui
+    try-it-out-enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - info
+          - health
+          - loggers

@@ -10,9 +10,9 @@ import lombok.*;
 @AllArgsConstructor
 public class LogRequestVO {
 
-
+    @NotBlank(message = "traceId is mandatory")
     private String traceId;
-
+    @NotBlank(message = "correlationId is mandatory")
     private String correlationId;
 
     @NotBlank(message = "Service Name is mandatory")
