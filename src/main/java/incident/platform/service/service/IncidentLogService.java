@@ -1,9 +1,12 @@
 package incident.platform.service.service;
 
 
+import incident.platform.service.dao.ApiResponse;
 import incident.platform.service.dao.LogRequestVO;
 
 public interface IncidentLogService {
 
-    void publishLog(LogRequestVO request);
+    ApiResponse publishLog(
+            LogRequestVO request
+    );
 }

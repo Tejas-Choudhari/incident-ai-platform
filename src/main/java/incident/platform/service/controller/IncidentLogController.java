@@ -1,6 +1,7 @@
 package incident.platform.service.controller;
 
 
+import incident.platform.service.dao.ApiResponse;
 import incident.platform.service.dao.LogRequestVO;
 import incident.platform.service.service.IncidentLogService;
 import jakarta.validation.Valid;
@@ -16,15 +17,13 @@ public class IncidentLogController {
     private final IncidentLogService service;
 
     @PostMapping
-    public ResponseEntity<String> publishLog(
+    public ResponseEntity<ApiResponse> publishLog(
             @Valid
             @RequestBody
             LogRequestVO request) {
 
-        service.publishLog(request);
-
         return ResponseEntity.ok(
-                "Log Published Successfully"
+                service.publishLog(request)
         );
     }
 }

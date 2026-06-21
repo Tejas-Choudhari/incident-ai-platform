@@ -25,33 +25,16 @@ public class KafkaConsumerService {
             topics = PlatformConstants.INCIDENT_TOPIC,
             groupId = "incident-group"
     )
-    public void consume(LogRequestVO dto) {
+    public void consume(
+            IncidentLogEntity incidentLogEntity) {
 
-        log.info("Received DTO : {}", dto);
-        IncidentLogEntity incidentLog =
-                IncidentLogEntity.builder()
-                        .traceId(dto.getTraceId())
-                        .correlationId(dto.getCorrelationId())
-                        .serviceName(dto.getServiceName())
-                        .serviceVersion(dto.getServiceVersion())
-                        .hostName(dto.getHostName())
-                        .environment(dto.getEnvironment())
-                        .logLevel(dto.getLogLevel())
-                        .logMessage(dto.getLogMessage())
-                        .exceptionName(dto.getExceptionName())
-                        .stackTrace(dto.getStackTrace())
-                        .sourceTopic(
-                                PlatformConstants.INCIDENT_TOPIC
-                        )
-                        .build();
-
-        IncidentLogEntity savedIncident =
-                repository.save(incidentLog);
-
-        aiAnalysisService
-                .analyzeIncident(savedIncident);
         log.info(
-                "Incident Log Saved Successfully"
+                "Received Incident Id : {}",
+                incidentLogEntity.getId()
+        );
+
+        aiAnalysisService.analyzeIncident(
+                incidentLogEntity
         );
     }
 }
