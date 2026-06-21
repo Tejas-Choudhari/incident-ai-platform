@@ -4,7 +4,8 @@ package incident.platform.service.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -25,18 +26,15 @@ public class GlobalExceptionHandler {
 
         response.put(
                 "timestamp",
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         response.put(
                 "status",
-                HttpStatus.NOT_FOUND.value()
-        );
+                HttpStatus.NOT_FOUND.value());
 
         response.put(
                 "message",
-                ex.getMessage()
-        );
+                ex.getMessage());
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -55,13 +53,11 @@ public class GlobalExceptionHandler {
 
         response.put(
                 "status",
-                HttpStatus.BAD_REQUEST.value()
-        );
+                HttpStatus.BAD_REQUEST.value());
 
         response.put(
                 "message",
-                "Incident Id must be numeric"
-        );
+                "Incident Id must be numeric");
 
         return ResponseEntity
                 .badRequest()

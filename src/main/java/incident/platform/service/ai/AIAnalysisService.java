@@ -10,10 +10,14 @@ import incident.platform.service.entity.IncidentLogEntity;
 import incident.platform.service.repository.IncidentAnalysisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+/**
+ * This class is for AIAnalysisService manage AI related configuration
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,6 +27,11 @@ public class AIAnalysisService {
     private final IncidentAnalysisRepository analysisRepository;
     private final ObjectMapper objectMapper;
 
+    /**
+     * This method is for analyze Incident
+     *
+     * @param incidentLogEntity
+     */
     public void analyzeIncident(
             IncidentLogEntity incidentLogEntity) {
 
@@ -42,16 +51,16 @@ public class AIAnalysisService {
                         .build();
 
         String requestBody = """
-        {
-          "model":"%s",
-          "messages":[
-            {
-              "role":"user",
-              "content":"%s"
-            }
-          ]
-        }
-        """.formatted(
+                {
+                  "model":"%s",
+                  "messages":[
+                    {
+                      "role":"user",
+                      "content":"%s"
+                    }
+                  ]
+                }
+                """.formatted(
                 properties.getModel(),
                 prompt.replace("\"", "\\\"")
         );
@@ -82,39 +91,39 @@ public class AIAnalysisService {
 
         log.info("AI Content : {}", aiContent);
         try {
-            AiAnalysisResponse aiAnalysisResponse1=
+            AiAnalysisResponse aiAnalysisResponse1 =
                     objectMapper.readValue(
                             aiContent,
                             AiAnalysisResponse.class
                     );
 
 
-        IncidentAnalysisEntity analysis =
-                IncidentAnalysisEntity.builder()
-                        .incidentId(
-                                incidentLogEntity.getId()
-                        )
-                        .severity(
-                                aiAnalysisResponse1.getSeverity()
-                        )
-                        .rootCause(
-                                aiAnalysisResponse1.getRootCause()
-                        )
-                        .recommendation(
-                                aiAnalysisResponse1.getRecommendation()
-                        )
-                        .aiSummary(
-                                aiAnalysisResponse1.getSummary()
-                        )
-                        .modelName(
-                                properties.getModel()
-                        )
-                        .analysisStatus(
-                                "SUCCESS"
-                        )
-                        .build();
+            IncidentAnalysisEntity analysis =
+                    IncidentAnalysisEntity.builder()
+                            .incidentId(
+                                    incidentLogEntity.getId()
+                            )
+                            .severity(
+                                    aiAnalysisResponse1.getSeverity()
+                            )
+                            .rootCause(
+                                    aiAnalysisResponse1.getRootCause()
+                            )
+                            .recommendation(
+                                    aiAnalysisResponse1.getRecommendation()
+                            )
+                            .aiSummary(
+                                    aiAnalysisResponse1.getSummary()
+                            )
+                            .modelName(
+                                    properties.getModel()
+                            )
+                            .analysisStatus(
+                                    "SUCCESS"
+                            )
+                            .build();
 
-        analysisRepository.save(analysis);
+            analysisRepository.save(analysis);
 
         } catch (Exception ex) {
 
@@ -143,29 +152,29 @@ public class AIAnalysisService {
             IncidentLogEntity incident) {
 
         return """
-            Analyze the following production incident.
-
-            Service Name: %s
-            Environment: %s
-            Log Level: %s
-            Exception: %s
-            Log Message: %s
-            Stack Trace: %s
-
-            Return ONLY valid JSON.
-
-            {
-              "severity":"",
-              "rootCause":"",
-              "recommendation":"",
-              "summary":""
-            }
-
-            Do not return markdown.
-            Do not return explanation.
-            Do not return tables.
-            Return JSON only.
-            """
+                Analyze the following production incident.
+                
+                Service Name: %s
+                Environment: %s
+                Log Level: %s
+                Exception: %s
+                Log Message: %s
+                Stack Trace: %s
+                
+                Return ONLY valid JSON.
+                
+                {
+                  "severity":"",
+                  "rootCause":"",
+                  "recommendation":"",
+                  "summary":""
+                }
+                
+                Do not return markdown.
+                Do not return explanation.
+                Do not return tables.
+                Return JSON only.
+                """
                 .formatted(
                         incident.getServiceName(),
                         incident.getEnvironment(),
