@@ -3,6 +3,7 @@ package incident.platform.service.kafka;
 
 import incident.platform.service.constants.PlatformConstants;
 import incident.platform.service.dao.LogRequestVO;
+import incident.platform.service.entity.IncidentLogEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -13,18 +14,20 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaProducerService {
 
-    private final KafkaTemplate<String, LogRequestVO> kafkaTemplate;
+    private final KafkaTemplate<String, IncidentLogEntity>
+            kafkaTemplate;
 
-    public void publish(LogRequestVO dto) {
+    public void publish(
+            IncidentLogEntity entity) {
 
         kafkaTemplate.send(
                 PlatformConstants.INCIDENT_TOPIC,
-                dto
+                entity
         );
 
         log.info(
-                "Message published to Kafka Topic : {}",
-                PlatformConstants.INCIDENT_TOPIC
+                "Incident Published To Kafka : {}",
+                entity.getId()
         );
     }
 }
