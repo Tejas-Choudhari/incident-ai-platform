@@ -4,16 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import incident.platform.service.config.OpenRouterProperties;
+import incident.platform.service.constants.PlatformConstants;
 import incident.platform.service.dao.AiAnalysisResponse;
 import incident.platform.service.entity.IncidentAnalysisEntity;
 import incident.platform.service.entity.IncidentLogEntity;
+import incident.platform.service.entity.KnowledgeBaseEntity;
 import incident.platform.service.repository.IncidentAnalysisRepository;
+import incident.platform.service.repository.KnowledgeBaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This class is for AIAnalysisService manage AI related configuration
@@ -26,6 +32,7 @@ public class AIAnalysisService {
     private final OpenRouterProperties properties;
     private final IncidentAnalysisRepository analysisRepository;
     private final ObjectMapper objectMapper;
+    private final KnowledgeBaseRepository knowledgeBaseRepository;
 
     /**
      * This method is for analyze Incident
@@ -35,7 +42,13 @@ public class AIAnalysisService {
     public void analyzeIncident(
             IncidentLogEntity incidentLogEntity) {
 
-        String prompt = buildPrompt(incidentLogEntity);
+        KnowledgeBaseEntity knowledge  =
+                knowledgeBaseRepository.findByExceptionName(incidentLogEntity.getExceptionName());
+
+        String prompt = buildPrompt(incidentLogEntity, knowledge);
+        log.info("Knowledge Base Match Found : {}",
+                knowledge != null ? knowledge.getExceptionName() : "NO_MATCH"
+        );
 
         WebClient webClient =
                 WebClient.builder()
@@ -149,10 +162,30 @@ public class AIAnalysisService {
     }
 
     private String buildPrompt(
-            IncidentLogEntity incident) {
+            IncidentLogEntity incident,
+            KnowledgeBaseEntity knowledge) {
+
+        String historicalKnowledge =
+                knowledge == null
+                        ? "No historical incident found."
+                        : """
+                        Historical Incident Knowledge
+                        
+                        Known Root Cause:
+                        %s
+                        
+                        Known Resolution:
+                        %s
+                        """
+                        .formatted(
+                                knowledge.getRootCause(),
+                                knowledge.getResolution()
+                        );
 
         return """
-                Analyze the following production incident.
+                You are a Production Support Engineer.
+                
+                Analyze the following incident.
                 
                 Service Name: %s
                 Environment: %s
@@ -160,6 +193,8 @@ public class AIAnalysisService {
                 Exception: %s
                 Log Message: %s
                 Stack Trace: %s
+                
+                %s
                 
                 Return ONLY valid JSON.
                 
@@ -172,7 +207,6 @@ public class AIAnalysisService {
                 
                 Do not return markdown.
                 Do not return explanation.
-                Do not return tables.
                 Return JSON only.
                 """
                 .formatted(
@@ -181,7 +215,8 @@ public class AIAnalysisService {
                         incident.getLogLevel(),
                         incident.getExceptionName(),
                         incident.getLogMessage(),
-                        incident.getStackTrace()
+                        incident.getStackTrace(),
+                        historicalKnowledge
                 );
     }
 }
